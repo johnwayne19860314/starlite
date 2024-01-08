@@ -8,7 +8,10 @@ require (
 	golang.org/x/oauth2 v0.15.0
 )
 
-require github.com/golang-migrate/migrate/v4 v4.17.0
+require (
+	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
+	github.com/golang-migrate/migrate/v4 v4.17.0
+)
 
 require (
 	github.com/cespare/xxhash v1.1.0 // indirect
@@ -64,7 +67,6 @@ require (
 	//github.com/dolthub/go-mysql-server v0.17.0
 	github.com/dolthub/go-mysql-server v0.11.1-0.20211221001611-9b2e55e8fbeb
 	github.com/gin-gonic/gin v1.7.2
-	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.4.0
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0

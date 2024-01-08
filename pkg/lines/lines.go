@@ -3,11 +3,13 @@ package lines
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	_ "go.uber.org/automaxprocs"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/gin-gonic/contrib/static"
 	"github.startlite.cn/itapp/startlite/pkg/lines/appx"
 	"github.startlite.cn/itapp/startlite/pkg/lines/featurex"
 	"github.startlite.cn/itapp/startlite/pkg/lines/healthcheck"
@@ -25,6 +27,7 @@ func InitApp() *appContext {
 
 	//router := gin.New()
 	healthcheck.Init(appCtx, appCtx.router)
+	appCtx.router.Use(static.Serve("/", static.LocalFile("../../ui/dist", true)))
 	appCtx.router.Use(MiddlewareWrapper(appCtx, middlewarex.Log))
 	appCtx.router.Use(MiddlewareWrapper(appCtx, middlewarex.Recovery))
 	SetupCORS(appCtx, appCtx.router)
@@ -61,6 +64,7 @@ func StartServer(appCtx *appContext) {
 	if server.IsLocal() {
 		host = "127.0.0.1" + host
 	}
+
 	srv := &http.Server{
 		Addr:    host,
 		Handler: appCtx.GetRouter(),

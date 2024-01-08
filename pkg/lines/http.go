@@ -51,7 +51,7 @@ func SetupCORS(appCtx appx.AppContext, router *gin.Engine) {
 		AllowCredentials: true,
 		AllowWildcard:    true,
 		MaxAge:           12 * time.Hour,
-		AllowAllOrigins: true,
+		AllowAllOrigins:  true,
 	}
 	// if appCtx.IsLocal() {
 	// 	cfg.AllowAllOrigins = true
@@ -84,6 +84,7 @@ func SetupHttpServer(appCtx appx.AppContext, routes []Route) {
 			appCtx.GetRouter().Handle(route.Method, route.MakeRelativePath(), HttpHandler(appCtx, route.Handler))
 		}
 	}
+	
 }
 
 // HttpHandler help setup ReqContext for controller
@@ -141,9 +142,9 @@ func HttpHandler(appCtx appx.AppContext, point EntryPoint) gin.HandlerFunc {
 			return
 		}
 		ret = map[string]interface{}{
-			"message":  "ok",
-			"xid":      rc.GetXid(),
-			"data": ret,
+			"message": "ok",
+			"xid":     rc.GetXid(),
+			"data":    ret,
 		}
 		ctx.JSON(http.StatusOK, ret)
 	}

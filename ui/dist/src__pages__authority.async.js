@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk=self.webpackChunk||[]).push([[670],{81808:function(e,u,t){t.r(u);var a={"/":["/"],"/about/u/1":["/about/u/1"],"/about/u/2":["/about/u/2"],"/about/m":["/about/m"],"/about/um":["/about/um"],"/entry/detail":["/entry/detail"],"/users":["/users"]};u.default=a}}]);

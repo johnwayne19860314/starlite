@@ -6,7 +6,8 @@ on:
   workflow_dispatch: # 允许手动触发工作流
   push: # 当有代码推送事件发生时
     branches:
-      - main # 只有推送到 main 分支时才触发
+      - main 
+      - back-front
 
 # 定义工作流的任务
 jobs:
