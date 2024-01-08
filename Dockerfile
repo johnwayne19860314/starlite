@@ -48,9 +48,9 @@ RUN chmod 777 /starlite/first/start.sh
 RUN echo $(ls -1 /starlite/first)
 #ENTRYPOINT /starlite/first/main
 #ENTRYPOINT ["/starlite/first/start.sh"]
-CMD [ "/starlite/first/main" ]
+#CMD [ "/starlite/first/main" ]
 ENTRYPOINT ["/starlite/first/start.sh"]
-#CMD ["sleep" "infinity"]
+CMD ["sleep infinity"]
 
 
 # FROM golang:1.20 as builder
