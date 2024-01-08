@@ -53,11 +53,11 @@ func SetupCORS(appCtx appx.AppContext, router *gin.Engine) {
 		MaxAge:           12 * time.Hour,
 		AllowAllOrigins: true,
 	}
-	if appCtx.IsLocal() {
-		cfg.AllowAllOrigins = true
-	} else {
-		cfg.AllowOrigins = []string{"*.xxx.cn", "*.xxx.com", "*.xxxmotors.com"}
-	}
+	// if appCtx.IsLocal() {
+	// 	cfg.AllowAllOrigins = true
+	// } else {
+	// 	cfg.AllowOrigins = []string{"*.xxx.cn", "*.xxx.com", "*.xxxmotors.com"}
+	// }
 
 	// cors - put it before router handle
 	router.Use(cors.New(cfg))
