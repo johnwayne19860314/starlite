@@ -61,7 +61,7 @@ jobs:
   deploy:
     needs: build-image
     runs-on: ubuntu-latest
-    if: github.repository == 'starlite'
+    # if: github.repository == 'starlite'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
