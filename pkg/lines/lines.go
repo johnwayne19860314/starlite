@@ -3,7 +3,6 @@ package lines
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	_ "go.uber.org/automaxprocs"
 
