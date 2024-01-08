@@ -9,8 +9,8 @@ WORKDIR /starlite
 
 COPY . .
 
-ARG MODULE_NAME
-WORKDIR /starlite/internal/$MODULE_NAME
+#ARG MODULE_NAME
+WORKDIR /starlite/internal/first
 
 #-ldflags "-X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn -s -w"
 RUN GOOS=linux GOARCH=amd64 go build -tags musl  -o main ./cmd/*
@@ -26,28 +26,28 @@ FROM alpine:3.16.0
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 RUN apk add ca-certificates tzdata
 
-ARG MODULE_NAME
-WORKDIR /starlite/$MODULE_NAME
+#ARG MODULE_NAME
+WORKDIR /starlite/first
 RUN true
 
-COPY --from=compiler /starlite/internal/$MODULE_NAME/dist .
+COPY --from=compiler /starlite/internal/first/dist .
 RUN true
 
-COPY internal/$MODULE_NAME/app.env .
+COPY internal/first/app.env .
 COPY start.sh .
 
-COPY internal/$MODULE_NAME/db/migration ./db/migration
+COPY internal/first/db/migration ./db/migration
 
 EXPOSE 8080
 
-ENV MODULE_NAME=$MODULE_NAME
+#ENV MODULE_NAME=first
 #USER 1000
 #USER root
 RUN chmod 777 /starlite/first/start.sh
-#RUN ls /starlite/$MODULE_NAME
-RUN echo $(ls -1 /starlite/$MODULE_NAME)
-#ENTRYPOINT /starlite/$MODULE_NAME/main
-#ENTRYPOINT ["/starlite/$MODULE_NAME/start.sh"]
+#RUN ls /starlite/first
+RUN echo $(ls -1 /starlite/first)
+#ENTRYPOINT /starlite/first/main
+#ENTRYPOINT ["/starlite/first/start.sh"]
 CMD [ "/starlite/first/main" ]
 ENTRYPOINT ["/starlite/first/start.sh"]
 #CMD ["sleep" "infinity"]
