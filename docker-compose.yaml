@@ -1,0 +1,36 @@
+version: '3.1'
+
+services:
+
+  db:
+    image: postgres:14.7
+    restart: always
+    environment:
+      POSTGRES_DB: starlite
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dummy-password
+    ports:
+      - 5432:5432
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        MODULE_NAME: first
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_SOURCE=postgresql://root:dummy-password@db:5432/starlite?sslmode=disable
+    depends_on:
+      - db
+    # entrypoint:
+    #   [
+    #     "/app/wait-for.sh",
+    #     "postgres:5432",
+    #     "--",
+    #     "/app/start.sh"
+    #   ]
+    # command: [ "/app/main" ]
+
+ 

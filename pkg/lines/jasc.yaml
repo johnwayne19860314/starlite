@@ -1,0 +1,18 @@
+IsGitHub: true
+modules: {}
+stages:
+  code_check: {}
+  custom_docker_build:
+    - module: golang_unit_test
+      dockerfile: test.Dockerfile
+      docker_source_type: Dockerfile
+      command: "make test"
+    - name: golang_lint
+      dockerfile: test.Dockerfile
+      docker_source_type: Dockerfile
+      command: "make lint"
+  build:
+    - module: tools
+      dockerfile: tools.Dockerfile
+      tags:
+        - latest

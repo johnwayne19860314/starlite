@@ -1,0 +1,4 @@
+package cpogovsdk
+
+// QueryStationStatsUsingPOSTJSONBody defines parameters for QueryStationStatsUsingPOST.
+type QueryStationStatsUsingPOSTJSONBody GovChargingRequestEncryption

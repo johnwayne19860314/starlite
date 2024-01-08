@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationStopChargeResultJSONRequestBody defines body for NotificationStopChargeResult for application/json ContentType.
+type NotificationStopChargeResultJSONRequestBody NotificationStopChargeResultJSONBody

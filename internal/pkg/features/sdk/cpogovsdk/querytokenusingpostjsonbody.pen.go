@@ -1,0 +1,4 @@
+package cpogovsdk
+
+// QueryTokenUsingPOSTJSONBody defines parameters for QueryTokenUsingPOST.
+type QueryTokenUsingPOSTJSONBody GovChargingRequestEncryption

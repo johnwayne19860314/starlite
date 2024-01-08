@@ -1,0 +1,101 @@
+profiles:
+  common:
+    allow_fail: true
+  api:
+    chart: line
+    containerPort: 8080
+    # envFrom:
+    #   - secretRef:
+    #       name: iem-secrets
+    # ingress:
+    #   enabled: true
+    #   annotations:
+    #     kubernetes.io/ingress.class: nginx
+    #     kubernetes.io/ingress.allow-http: "true"
+    #     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    #     nginx.ingress.kubernetes.io/proxy-body-size: "150m"
+    #   tlsSecretName: wildcard-xxx-cn-tls
+    healthcheck:
+      enabled: false
+      path: /
+modules:
+  starlite:
+    dir: ./
+stages:
+  code_check:
+   - name: codeql
+     when:
+       branches:
+         - main
+         - PR-*
+         - stg/*
+         - stg.*/*
+  module_select:
+    - based_on_commit_msg: False
+      when:
+        branches:
+          - try/*
+          - eng/*
+          - stg/*
+          - release/*
+  build:
+    - module: starlite
+      dockerfile: Dockerfile
+  helm_deploy:
+    - module: starlite
+      urlpath: /api/starlite
+      profile: api
+      healthcheck:
+        enabled: true
+        path: /api/starlite/healthz
+      app_env:
+        eng:
+          envFrom:
+            - secretRef:
+                name: iem-eng
+          ingress:
+            enabled: true
+            annotations:
+              kubernetes.io/ingress.class: nginx
+            tlsSecretName: iem-tls-eng
+          configmap:
+            enabled: true
+            config:
+              SERVER_NAME: starlite
+              SERVER_PORT: 8080
+              SERVER_RUN_LEVEL: eng
+              SERVER_HOST: "https://iem-eng.cn-pvg06-eng-r1-general.k8s.xxx.com"
+              #database
+              DATABASE_DRIVER: postgres
+              #DATABASE_DSN: "host=127.0.0.1 port=5432 user=postgres dbname=iem password=dummy-password sslmode=disable TimeZone=Asia/Shanghai"
+              POD_NUM: "1"
+              TOKEN_HOST: https://energy-auth.eng.chen.cloud.xxx.cn/
+              COMMAND_HOST: command.eng.chen.cloud.xxx.cn
+              COMMAND_PORT: "443"
+              COMMAND_INSECURE: "false"
+              ASSET_HOST: https://asset.eng.chen.cloud.xxx.cn/
+              BI_HOST: https://fuxi-api-stg.xxx.cn/
+              CSM_HOST: charging-state-machine.eng.chen.cloud.xxx.cn
+              CSM_PORT: "443"
+             
+        stg:
+          configmap:
+            enabled: true
+            config:
+              SERVER_NAME: starlite
+              SERVER_PORT: 8080
+              SERVER_RUN_LEVEL: stg
+              SERVER_HOST: "https://iem-stg.cn-pvg06-eng-r1-general.k8s.xxx.com"
+              #database
+              DATABASE_DRIVER: mysql
+        prd:
+          configmap:
+            enabled: true
+            config:
+              SERVER_NAME: starlite
+              SERVER_PORT: 8080
+              SERVER_RUN_LEVEL: prd
+              SERVER_HOST: "https://iem-prd.cn-pvg06-prd-r1-general.k8s.xxx.com"
+              #database
+              DATABASE_DRIVER: mysql
+

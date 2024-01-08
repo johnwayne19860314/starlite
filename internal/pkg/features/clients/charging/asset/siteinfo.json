@@ -1,0 +1,125 @@
+{
+    "meta": {
+        "request_id": "d4a40902d326b2026ccc255ae18b0613",
+        "claims_limits": {
+            "instance_filter_applied": [
+                "*"
+            ]
+        },
+        "pagination": null
+    },
+    "data": {
+        "resource_type": "site",
+        "site_id": "7ba94187-544b-4f4f-906b-870655f0ba01",
+        "site_number": "STE20230221-00001-CN",
+        "site_name": "上海古博路仓库测试",
+        "instance_ids": [
+            "f92e64cd-158d-4dfd-9f49-f626dc549348",
+            "54a047ec-8201-4744-94cf-359591346cd6",
+            "bbf75ec2-7e1f-4376-b557-86754be75cb2"
+        ],
+        "is_active": true,
+        "operation_date": null,
+        "created_datetime": "2023-08-09T02:42:32.354Z",
+        "updated_datetime": "2023-10-12T15:06:44.026Z",
+        "customers": [],
+        "is_deleted": false,
+        "address": {
+            "resource_type": "address",
+            "address_id": "0946ae70-8547-4b9f-ae99-89b088ab7041",
+            "address_line1": "新场镇古博路38号",
+            "address_line2": "6幢一层D区-2",
+            "city": "上海市",
+            "state": "Shanghai",
+            "zip": "0",
+            "county": null,
+            "country": "China",
+            "latitude": null,
+            "longitude": null,
+            "time_zone": "Asia/Shanghai",
+            "address_hash": "86e89d0d18515aa395cd9243f67463ce378ae5dfc988fab1eff31c5e3ae95549",
+            "created_datetime": "2023-02-24T05:10:12.377Z",
+            "updated_datetime": "2023-10-12T15:06:43.751Z"
+        },
+        "installation_type": null,
+        "market_type": "commercial",
+        "aggregator_site_id": null,
+        "source": "trt",
+        "external_site_id": "4005479",
+        "account_id": null,
+        "battery": {
+            "total_nameplate_max_discharge_power": 0.0,
+            "total_nameplate_max_charge_power": 0.0,
+            "total_nameplate_energy": 0.0,
+            "batteries": []
+        },
+        "gateway": {
+            "total_gateways": 0,
+            "gateways": []
+        },
+        "meter": [],
+        "inverter": [],
+        "charger": [],
+        "wall_connector": [
+            {
+                "resource_type": "wall_connector",
+                "device_id": "29f91508-d520-46d3-9eb6-482433a4a7da",
+                "site_id": "7ba94187-544b-4f4f-906b-870655f0ba01",
+                "din": "1552466-02-G--PGT22297062865",
+                "serial_number": "PGT22297062865",
+                "is_active": true,
+                "part_number": "1552466-02-G",
+                "is_ppu": true,
+                "wall_connector_version": "Gen 3 xxx",
+                "created_datetime": "2023-02-24T06:24:10.157Z",
+                "updated_datetime": "2023-09-22T01:34:09.809Z",
+                "firmware_version": null,
+                "access_type": null,
+                "installed_power_w": null,
+                "source": null
+            },
+            {
+                "resource_type": "wall_connector",
+                "device_id": "a924e071-c4fe-48e3-89f3-30766781860f",
+                "site_id": "7ba94187-544b-4f4f-906b-870655f0ba01",
+                "din": "1552466-02-G--PGT22260061272",
+                "serial_number": "PGT22260061272",
+                "is_active": true,
+                "part_number": "1552466-02-G",
+                "is_ppu": true,
+                "wall_connector_version": "Gen 3 xxx",
+                "created_datetime": "2023-02-24T06:24:35.663Z",
+                "updated_datetime": "2023-09-22T01:34:09.863Z",
+                "firmware_version": null,
+                "access_type": null,
+                "installed_power_w": null,
+                "source": null
+            },
+            {
+                "resource_type": "wall_connector",
+                "device_id": "439cd7d7-76f3-4e37-8753-09b8b3fcc276",
+                "site_id": "7ba94187-544b-4f4f-906b-870655f0ba01",
+                "din": "1552466-02-G--PGT22151037533",
+                "serial_number": "PGT22151037533",
+                "is_active": true,
+                "part_number": "1552466-02-G",
+                "is_ppu": true,
+                "wall_connector_version": "Gen 3 xxx",
+                "created_datetime": "2023-02-24T05:10:12.459Z",
+                "updated_datetime": "2023-09-22T01:34:09.904Z",
+                "firmware_version": null,
+                "access_type": "Public",
+                "installed_power_w": null,
+                "source": null
+            }
+        ],
+        "controller": [],
+        "geolocation": {
+            "latitude": null,
+            "longitude": null,
+            "source": "None"
+        },
+        "access_type": "Public"
+    },
+    "links": null
+}

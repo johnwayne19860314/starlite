@@ -1,0 +1,4 @@
+package cpogovsdk
+
+// QueryStationStatusUsingPOSTJSONRequestBody defines body for QueryStationStatusUsingPOST for application/json ContentType.
+type QueryStationStatusUsingPOSTJSONRequestBody QueryStationStatusUsingPOSTJSONBody

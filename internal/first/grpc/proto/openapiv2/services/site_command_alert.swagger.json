@@ -1,0 +1,297 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "xxx starlite",
+    "version": "1.2",
+    "contact": {
+      "name": "zhijun.jiang",
+      "email": "zhijunjiang@xxx.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "SiteCommandAlertService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/starlite/v1/addCommand": {
+      "post": {
+        "operationId": "SiteCommandAlertService_AddCommand",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbAddCommandResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbAddCommandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SiteCommandAlertService"
+        ]
+      }
+    },
+    "/api/starlite/v1/addSite": {
+      "post": {
+        "operationId": "SiteCommandAlertService_AddSite",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbAddSiteResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbAddSiteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "SiteCommandAlertService"
+        ]
+      }
+    },
+    "/api/starlite/v1/getSites": {
+      "get": {
+        "operationId": "SiteCommandAlertService_GetSites",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetSitesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "SiteCommandAlertService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "pbAddCommandRequest": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "$ref": "#/definitions/pbCommand"
+        }
+      }
+    },
+    "pbAddCommandResponse": {
+      "type": "object",
+      "properties": {
+        "command": {
+          "$ref": "#/definitions/pbCommand"
+        }
+      }
+    },
+    "pbAddSiteRequest": {
+      "type": "object",
+      "properties": {
+        "site": {
+          "$ref": "#/definitions/pbSite"
+        }
+      }
+    },
+    "pbAddSiteResponse": {
+      "type": "object",
+      "properties": {
+        "site": {
+          "$ref": "#/definitions/pbSite"
+        }
+      }
+    },
+    "pbChargerAvailability1": {
+      "type": "string",
+      "enum": [
+        "INVALID",
+        "AVAILABLE",
+        "OCCUPIED",
+        "DOWN",
+        "REDUCED_SERVICE",
+        "UNKNOWN",
+        "SEND_FAILED"
+      ],
+      "default": "INVALID",
+      "description": "A server side representation of a charger's availability."
+    },
+    "pbCommand": {
+      "type": "object",
+      "properties": {
+        "siteId": {
+          "type": "string",
+          "title": "int32 id = 3;"
+        },
+        "din": {
+          "type": "string"
+        },
+        "dinAvailability": {
+          "$ref": "#/definitions/pbChargerAvailability1"
+        },
+        "reqStateOfCharging": {
+          "type": "number",
+          "format": "float"
+        },
+        "reqVoltageV": {
+          "type": "number",
+          "format": "float"
+        },
+        "reqCurrentA": {
+          "type": "number",
+          "format": "float"
+        },
+        "reqLastUpdated": {
+          "type": "string"
+        },
+        "targetCurrentA": {
+          "type": "number",
+          "format": "float"
+        },
+        "commandSuccess": {
+          "type": "boolean"
+        },
+        "commandEndAt": {
+          "type": "string"
+        }
+      }
+    },
+    "pbGetSitesResponse": {
+      "type": "object",
+      "properties": {
+        "sites": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/pbSite"
+          }
+        }
+      }
+    },
+    "pbSite": {
+      "type": "object",
+      "properties": {
+        "siteId": {
+          "type": "string",
+          "title": "int32 id = 3;"
+        },
+        "siteName": {
+          "type": "string"
+        },
+        "handShakeCurrent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retryNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minCurrent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxCurrent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxTotalCurrent": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wcSecurityMax": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "totalWcNum": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "targetServiceLevel": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "normalChargingHour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

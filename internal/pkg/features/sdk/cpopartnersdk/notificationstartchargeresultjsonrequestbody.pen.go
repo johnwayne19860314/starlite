@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationStartChargeResultJSONRequestBody defines body for NotificationStartChargeResult for application/json ContentType.
+type NotificationStartChargeResultJSONRequestBody NotificationStartChargeResultJSONBody

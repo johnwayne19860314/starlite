@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationChargeOrderInfoJSONBody defines parameters for NotificationChargeOrderInfo.
+type NotificationChargeOrderInfoJSONBody PartnerTCECRequest

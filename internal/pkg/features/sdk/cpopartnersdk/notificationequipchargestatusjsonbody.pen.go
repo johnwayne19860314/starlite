@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationEquipChargeStatusJSONBody defines parameters for NotificationEquipChargeStatus.
+type NotificationEquipChargeStatusJSONBody PartnerTCECRequest

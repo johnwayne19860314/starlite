@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+//import "resources/entry.proto";
+
+option go_package = "github.startlite.cn/itapp/startlite/internal/first/grpc/pb";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+	info: {
+		title: "xxx starlite";
+		version: "1.2";
+		contact: {
+			name: "zhijun.jiang";
+			email: "zhijunjiang@xxx.com";
+		};
+	};
+};
+
+service EntryService {
+    rpc GetEntry(GetEntryRequest) returns (GetEntryResponse) {
+        option (google.api.http) = {
+            get: "/api/starlite/v1/getEntry"
+        };
+		// option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+		// 	description: "Use this API to exchange entry wall connector control policies";
+		// 	summary: "";
+        // };
+    }
+    rpc AddEntry (AddEntryRequest) returns (AddEntryResponse) {
+        option (google.api.http) = {
+            post: "/api/starlite/v1/addEntry"
+            body: "*"
+        };
+		
+    }
+    
+}
+
+message Entry {
+    //int32 id = 3;
+    string name = 1;
+    string code = 2;
+    string codeCategory = 7;
+    int32 amount = 3;
+    float weight = 4;
+    string note = 6;
+    bool isActive = 5;
+    
+}
+
+message AddEntryRequest {
+    Entry entry = 1;
+}
+
+
+message AddEntryResponse {
+    Entry entry = 1;
+}
+
+
+message GetEntryRequest {
+    int32 id = 3;
+    string name = 1;
+    string code = 2;
+}
+message GetEntryResponse {
+    Entry entry = 1;
+}
+
+
+message ListEntriesRequest {
+    bool isActive = 3;
+    string category = 4;
+    int32 offset = 1;
+    int32 limit = 2;
+}
+
+message ListEntry {
+    string key = 5;
+    string name = 1;
+    string code = 2;
+    string codeCategory = 8;
+    int32 amount = 3;
+    float weight = 4;
+    string note = 6;
+    int32 id = 7;
+}
+message ListEntriesResponse {
+    repeated ListEntry entries = 1;
+}
+
+
+message UpdateEntryRequest {
+    bool isActive = 1;
+    int32 amount = 3;
+    float weight = 2;
+    string note = 5;
+    string code = 4;
+    string name = 6;
+}
+message UpdateEntryResponse {
+    Entry entry = 1;
+}
+
+
+message ImportEntryRequest {
+    string file = 1;
+}
+message ImportEntryResponse {
+    bool isSuccess = 1;
+}
+
+message DelEntryRequest {
+    string code = 1;
+}
+message DelEntryResponse {
+    bool success = 1;
+}
+
+message EntryCategory {
+    string category = 1;
+    string note = 2;
+    // bool isActive = 3;
+}
+message AddEntryCategoryRequest {
+    EntryCategory entryCategory = 1;
+}
+message AddEntryCategoryResponse {
+    EntryCategory entryCategory = 1;
+}
+message updateEntryCategoryRequest {
+    EntryCategory entryCategory = 1;
+}
+
+message updateEntryCategoryResponse {
+    EntryCategory entryCategory = 1;
+}
+message delEntryCategoryRequest {
+    string category = 1;
+}
+message delEntryCategoryResponse {
+    bool success = 1;
+}
+
+
+message ListEntryCategoriesRequest {
+    bool isActive = 1;
+}
+
+message EntryCategoryItem {
+    string key = 1;
+    string label = 2;
+    string note = 3;
+    
+}
+message  ListEntryCategoriesResponse {
+    repeated EntryCategoryItem items = 1;
+}

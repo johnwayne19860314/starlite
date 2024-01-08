@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationEquipChargeStatusJSONRequestBody defines body for NotificationEquipChargeStatus for application/json ContentType.
+type NotificationEquipChargeStatusJSONRequestBody NotificationEquipChargeStatusJSONBody

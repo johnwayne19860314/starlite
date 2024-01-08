@@ -1,0 +1,212 @@
+swagger: '2.0'
+info:
+     title: xxx starlite
+     version: '1.2'
+     contact:
+          name: zhijun.jiang
+          email: zhijunjiang@xxx.com
+tags:
+-    name: OrderlyChargingPredictionAndOptimizeService
+consumes:
+- application/json
+produces:
+- application/json
+paths:
+     /v1/orderly-charging/prediction-optimize:
+          post:
+               description: Use this API to exchange site wall connector control policies
+               operationId: OrderlyChargingPredictionAndOptimizeService_ExchangeSiteWcControlPolicy
+               responses:
+                    '200':
+                         description: A successful response.
+                         schema:
+                              $ref: '#/definitions/pbExchangeSiteWcControlPolicyResponse'
+                    default:
+                         description: An unexpected error response.
+                         schema:
+                              $ref: '#/definitions/rpcStatus'
+               parameters:
+               -    name: body
+                    in: body
+                    required: true
+                    schema:
+                         $ref: '#/definitions/pbExchangeSiteWcControlPolicyRequest'
+               tags:
+               - OrderlyChargingPredictionAndOptimizeService
+definitions:
+     pbChargerAvailability:
+          type: string
+          enum:
+          - CHARGER_AVAILABILITY_INVALID
+          - CHARGER_AVAILABILITY_AVAILABLE
+          - CHARGER_AVAILABILITY_OCCUPIED
+          - CHARGER_AVAILABILITY_DOWN
+          - CHARGER_AVAILABILITY_REDUCED_SERVICE
+          - CHARGER_AVAILABILITY_UNKNOWN
+          - CHARGER_AVAILABILITY_SEND_FAILED
+          default: CHARGER_AVAILABILITY_INVALID
+          description: A server side representation of a charger's availability.
+     pbExchangeSiteWcControlPolicyRequest:
+          type: object
+          properties:
+               masterData:
+                    $ref: '#/definitions/pbMasterData'
+               scheduleParams:
+                    $ref: '#/definitions/pbScheduleParameters'
+               stallInfo:
+                    type: array
+                    items:
+                         type: object
+                         $ref: '#/definitions/pbWallConnectorInfo'
+     pbExchangeSiteWcControlPolicyResponse:
+          type: object
+          properties:
+               chargingSchedule:
+                    type: array
+                    items:
+                         type: object
+                         $ref: '#/definitions/pbWallConnectorInfoResponse'
+     pbMasterData:
+          type: object
+          properties:
+               siteId:
+                    type: string
+               siteName:
+                    type: string
+     pbScheduleParameters:
+          type: object
+          properties:
+               availableStalls:
+                    type: integer
+                    format: int32
+               maxTotalCurrent:
+                    type: integer
+                    format: int32
+                    title: The cumulative current limit for all active charging stalls.
+                         defalt as 360A
+               targetServiceLevel:
+                    type: integer
+                    format: int32
+                    title: The desired SOC level post-charging for all vehicles. default
+                         as 80
+               stallCurrentMin:
+                    type: integer
+                    format: int32
+                    title: The stall min current setting default as 6A
+               stallCurrentMax:
+                    type: integer
+                    format: int32
+                    title: The stall max current setting default as 16A
+               norminalChargingHours:
+                    type: integer
+                    format: int32
+                    title: The stall charging hours to get the service level, need
+                         check with service provider; default as 8
+     pbVehicleInfo:
+          type: object
+          properties:
+               arrivalTime:
+                    type: string
+                    title: 'string vin = 1;
+
+                         string model = 2;
+
+                         string trim = 3;
+
+                         int32 battery_capacity = 4;
+
+                         not exactly accurate. the datetime when the interval find
+                         the wall connector plugged in'
+               arrivalSoc:
+                    type: number
+                    format: float
+               currentSoc:
+                    type: number
+                    format: float
+     pbWallConnectorInfo:
+          type: object
+          properties:
+               din:
+                    type: string
+                    description: Unique identifier for each stall.
+               chargerAvailability:
+                    $ref: '#/definitions/pbChargerAvailability'
+                    title: 'string serial_number = 9;
+
+                         Connection status indicating if a car is currently plugged
+                         in'
+               lastUpdated:
+                    type: string
+                    title: 'string part_number =7;
+
+                         bool is_ppu = 6;
+
+                         string wall_connector_version = 5;
+
+                         string created_datetime = 1;
+
+                         string updated_datetime = 2;
+
+                         string firmware_version = 3;
+
+                         string access_type = 10;
+
+                         string installed_power_w = 11;
+
+                         Charging status to denote if the car is actively charging.
+
+                         int32 state_of_charging = 14;'
+               currentVoltage:
+                    type: number
+                    format: float
+                    description: The instantaneous voltage the DC meter or AC meter
+                         measured during the charging session.
+               currentAmperes:
+                    type: number
+                    format: float
+                    description: The instantaneous current the DC meter or AC meter
+                         measured during the charging session.
+               currentMaxCurrent:
+                    type: integer
+                    format: int32
+                    title: current setpoint [TBD] use the targetCurrent output last
+                         interval for now
+               vehicleInfo:
+                    $ref: '#/definitions/pbVehicleInfo'
+                    description: string source = 12;
+                    title: info of the connected vehicle
+     pbWallConnectorInfoResponse:
+          type: object
+          properties:
+               din:
+                    type: string
+               recommendedMaxCurrent:
+                    type: integer
+                    format: int32
+               estChargingDuration:
+                    type: integer
+                    format: int32
+               priority:
+                    type: integer
+                    format: int32
+               vin:
+                    type: string
+     protobufAny:
+          type: object
+          properties:
+               '@type':
+                    type: string
+          additionalProperties: {}
+     rpcStatus:
+          type: object
+          properties:
+               code:
+                    type: integer
+                    format: int32
+               message:
+                    type: string
+               details:
+                    type: array
+                    items:
+                         type: object
+                         $ref: '#/definitions/protobufAny'

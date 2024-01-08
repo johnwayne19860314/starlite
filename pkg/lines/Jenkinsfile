@@ -1,0 +1,82 @@
+@Library('china-it-app-shared-library') _
+def generateProjectName() {
+  def jobNameParts = env.JOB_NAME.tokenize('/') as String[]
+  jobNameParts.length < 2 ? env.JOB_NAME : jobNameParts[jobNameParts.length - 2]
+}
+
+PROJECT_NAME = generateProjectName()
+
+podTemplate(
+  cloud: 'kubernetes-cn-pvg03-eng-factory',
+  containers: [
+    containerTemplate(name: 'jnlp', image: 'china-devops-docker-local.arf.xxx.cn/base-images/jenkins-jnlp:jasc', resourceLimitMemory: '500Mi'),
+    containerTemplate(name: 'docker', image: 'china-devops-docker-local.arf.xxx.cn/base-images/docker', ttyEnabled: true, command: 'cat', resourceLimitMemory: '2000Mi', resourceRequestMemory: '100Mi'),
+    containerTemplate(name: 'utcontainer', image: 'china-devops-docker-local.arf.xxx.cn/base-images/golangci-lint:v1.30', ttyEnabled: true, command: 'cat', resourceLimitCpu: '1000m', resourceLimitMemory: '2000Mi', resourceRequestCpu: '1000m', resourceRequestMemory: '1500Mi')
+  ],
+  volumes: [
+    hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')
+  ],
+  imagePullSecrets: [ 'regcred' ]
+) {
+  node(POD_LABEL) {
+    checkout scm
+    String GIT_COMMIT = sh(returnStdout: true, script: "git rev-parse HEAD").trim()
+    env.GIT_COMMIT = GIT_COMMIT
+    String git_commit_short = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+    String build_id = "${BUILD_NUMBER}"
+    String build_ts = sh(returnStdout: true, script: "date -u +%Y-%m-%dT%H:%M:%SZ").trim()
+    String image_tag = "${env.BRANCH_NAMEh}-${git_commit_short}"
+    String REGISTRY_URL = 'gfsh-bjm-prd-docker-local.artifactory.it.cloud.xxx.cn'
+    String REGISTRY_CREDENTIALS_ID = 'sa-china-app-jenkins-arf'
+    String BUILD_BLUE_OCEAN_URL = "${env.JENKINS_URL}blue/organizations/jenkins/${env.PROJECT_NAME}/detail/${env.BRANCH_NAME}/${env.BUILD_NUMBER}/pipeline/"
+    echo BUILD_BLUE_OCEAN_URL
+    echo REGISTRY_URL
+    try{
+      stage('Test') {
+        if ( ! env.BRANCH_NAME.contains('release') && ! env.BRANCH_NAME.contains('try')) {
+          parallel(
+            'Unit Test': {
+              container('utcontainer') {
+                  withCredentials([usernamePassword(credentialsId: 'sa-china-app-jenkins', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                      script{
+                          sh """
+                              export GOPROXY=http://goproxy-china-it.mo.xxx.cn:8082,https://goproxy.cn/,https://goproxy.io/,direct
+                              export GOPRIVATE="*.xxx.cn,stash.xxxmotors.com"
+                              echo "machine github.startlite.cn/itapp/startlite login ${USERNAME} password ${PASSWORD}" >> ~/.netrc
+                              mkdir -p ../github.startlite.cn/itapp/startlite/gf3mos/
+                              cp -r ./ ../github.startlite.cn/itapp/startlite/pkg/lines
+                              cd ../github.startlite.cn/itapp/startlite/pkg/lines && make test
+                              cd -
+                              cp -r ../github.startlite.cn/itapp/startlite/pkg/lines ./
+                              rm -rf ../github.startlite.cn/itapp/startlite/pkg/lines
+                          """
+                          junit '**/junit.xml'
+                      }
+                  }
+                }
+            },
+            'Lint': {
+              container('utcontainer') {
+                withCredentials([usernamePassword(credentialsId: 'sa-china-app-jenkins', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                      script{
+                          sh """
+                              export GOPROXY="http://goproxy-china-it.mo.xxx.cn:8082,https://goproxy.cn/,https://goproxy.io/,direct"
+                              export GOPRIVATE="*.xxx.cn,stash.xxxmotors.com"
+                              echo "machine github.startlite.cn/itapp/startlite login ${USERNAME} password ${PASSWORD}" >> ~/.netrc
+                              make lint
+                          """
+                      }
+                  }
+              }
+            }
+          )
+        }
+      }
+    }catch (err){
+      sendNotifications('Failed', "GF3-MOS-DEV-Jenkins-Notification",['methods':['Email','Teams'],'mailList':'GFSH-BJM-Project@xxx.com, GF3_MOS_DEV@xxx.com'])
+      this.script.error 'Build Failed'
+    }
+    sendNotifications('Success', "GF3-MOS-DEV-Jenkins-Notification",['methods':['Email','Teams'],'mailList':'GFSH-BJM-Project@xxx.com, GF3_MOS_DEV@xxx.com'])
+
+  }
+}

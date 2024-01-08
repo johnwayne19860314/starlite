@@ -1,0 +1,12 @@
+# refresh pen : cd ${GOPATH}/src/github.startlite.cn/itapp/startlite/pkg/lines/tools/pen && go install .
+# refresh gen : cd ${GOPATH} && go get github.com/smallnest/gen
+
+# yaml
+src-yaml: starlite.yaml
+
+# flags
+app-name:
+app-package:
+target-dir:
+data-source: root:root@tcp(127.0.0.1)/bjm?collation=utf8_unicode_ci&parseTime=true&loc=UTC
+table-prefix:  orderlycharging_

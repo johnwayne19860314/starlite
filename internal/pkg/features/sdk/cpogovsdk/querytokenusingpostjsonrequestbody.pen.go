@@ -1,0 +1,4 @@
+package cpogovsdk
+
+// QueryTokenUsingPOSTJSONRequestBody defines body for QueryTokenUsingPOST for application/json ContentType.
+type QueryTokenUsingPOSTJSONRequestBody QueryTokenUsingPOSTJSONBody

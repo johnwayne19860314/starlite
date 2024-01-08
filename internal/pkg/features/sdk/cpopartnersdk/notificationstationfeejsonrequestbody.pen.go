@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationStationFeeJSONRequestBody defines body for NotificationStationFee for application/json ContentType.
+type NotificationStationFeeJSONRequestBody NotificationStationFeeJSONBody

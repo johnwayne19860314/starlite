@@ -1,0 +1,135 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "google/protobuf/timestamp.proto";
+//import "resources/user.proto";
+
+option go_package = "github.startlite.cn/itapp/startlite/internal/first/grpc/pb";
+
+
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+	info: {
+		title: "xxx starlite";
+		version: "1.2";
+		contact: {
+			name: "zhijun.jiang";
+			email: "zhijunjiang@xxx.com";
+		};
+	};
+};
+
+service UserService {
+    rpc GetUsers(GetUserRequest) returns (GetUserResponse) {
+        option (google.api.http) = {
+            get: "/api/starlite/v1/getUsers"
+        };
+		// option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+		// 	description: "Use this API to exchange user wall connector control policies";
+		// 	summary: "";
+        // };
+    }
+    rpc AddUser (AddUserRequest) returns (AddUserResponse) {
+        option (google.api.http) = {
+            post: "/api/starlite/v1/addUser"
+            body: "*"
+        };
+		
+    }
+    
+}
+
+message User {
+    //int32 id = 3;
+    string name = 1;
+    string email = 2;
+    string password = 3;
+    Role role = 4;
+    bool isActive = 5;
+}
+
+
+
+
+message AddUserRequest {
+    UserRecord user = 1;
+}
+
+
+message AddUserResponse {
+    User user = 1;
+}
+
+
+message GetUserRequest {
+    int32 id = 1;
+}
+message GetUserResponse {
+    UserRecord user = 1;
+}
+// A server side representation of a charger's availability.
+enum Role {
+    ROLE_LEVEL_UNSPECIFIED = 0;
+     admin = 1;
+     power = 2;
+     internal = 3;
+    
+}
+
+// message Role {
+//     enum RoleEnum {
+//         admin = 0;
+//         power = 1;
+//         internal = 2;
+//     }
+  
+//     RoleEnum my_role_field = 1;
+//   }
+
+message LoginRequest {
+    string username = 1;
+    string password = 2;
+}
+message LoginResponse {
+    User user = 1;
+    string token = 2;
+}
+
+message UpdateUserRequest {
+    UserRecord user = 1;
+}
+message UpdateUserResponse {
+    User user = 1;
+}
+
+message ListUsersRequest {
+   
+   // Role role = 3;
+    int32 page = 1;
+    int32 pageSize = 2;
+   
+}
+
+message UserRecord {
+    //int32 id = 3;
+    string name = 1;
+    string email = 2;
+    string password = 6;
+    Role role = 4;
+    string key = 3;
+    int32 id = 5;
+}
+message ListUsersResponse {
+    repeated UserRecord users = 1;
+    int32 page = 2;
+    int32 pageSize = 3;
+}
+
+message DelUserRequest {
+    int32 id = 1;
+}
+message DelUserResponse {
+    bool success = 1;
+}

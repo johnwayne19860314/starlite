@@ -1,0 +1,4 @@
+package cpopartnersdk
+
+// NotificationStartChargeResultJSONBody defines parameters for NotificationStartChargeResult.
+type NotificationStartChargeResultJSONBody PartnerTCECRequest

@@ -1,0 +1,3 @@
+[submodule "OpenAPI"]
+	path = OpenAPI
+	url = git@github.startlite.cn/itapp/startlite:ITApp/OpenAPI.git
