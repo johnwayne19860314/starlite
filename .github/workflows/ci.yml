@@ -37,13 +37,14 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }} # 使用存储在 GitHub Secrets 中的 DockerHub 密码
 
       # 登录到 ghcr.io (GitHub Container Registry)
-      - name: Login to ghcr.io
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }} # 使用仓库的拥有者名作为用户名
-          password: ${{ secrets.GHCR_TOKEN }} # 使用存储在 GitHub Secrets 中的 ghcr.io 的访问令牌
-
+      # - name: Login to ghcr.io
+      #   uses: docker/login-action@v2
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }} # 使用仓库的拥有者名作为用户名
+      #     password: ${{ secrets.GHCR_TOKEN }} # 使用存储在 GitHub Secrets 中的 ghcr.io 的访问令牌
+      # ghcr.io/${{ github.repository_owner }}/xxxx:latest
+      
       # 构建并推送 Docker 镜像到 docker.io 和 ghcr.io
       - name: Build and push Docker images to docker.io and ghcr.io
         uses: docker/build-push-action@v2
@@ -52,5 +53,5 @@ jobs:
           context: . # Docker 构建上下文设置为当前目录
           push: true # 设置为真以确保构建后的镜像被推送
           tags: | # 定义推送的标签
-            ${{ secrets.DOCKER_USERNAME }}/xxxx:latest
-            ghcr.io/${{ github.repository_owner }}/xxxx:latest
+            ${{ secrets.DOCKER_USERNAME }}/starlite-first:latest
+            
