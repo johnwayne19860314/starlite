@@ -13,7 +13,8 @@ COPY . .
 WORKDIR /starlite/internal/first
 
 #-ldflags "-X google.golang.org/protobuf/reflect/protoregistry.conflictPolicy=warn -s -w"
-RUN GOOS=linux GOARCH=amd64 go build -tags musl  -o main ./cmd/*
+#RUN GOOS=linux GOARCH=amd64 go build -tags musl  -o main ./cmd/*
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/*
 RUN mkdir -p dist && \
     cp main dist 
     # && \
@@ -47,11 +48,11 @@ RUN chmod 777 /starlite/first/start.sh
 #RUN ls /starlite/first
 RUN echo $(ls -1 /starlite/first)
 #ENTRYPOINT /starlite/first/main
-#ENTRYPOINT ["/starlite/first/start.sh"]
-# CMD [ "/starlite/first/main" ]
+ENTRYPOINT ["/starlite/first/start.sh"]
+CMD [ "/starlite/first/main" ]
 # ENTRYPOINT ["/starlite/first/start.sh"]
 #CMD ["sleep infinity"]
-CMD ["sh", "-c", "tail -f /dev/null"]
+#CMD ["sh", "-c", "tail -f /dev/null"]
 
 
 # FROM golang:1.20 as builder
