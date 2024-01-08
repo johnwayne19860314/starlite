@@ -12,6 +12,27 @@ func checkRes(t *testing.T, err error, res interface{}) {
 		t.Log(res)
 	}
 }
+
+func TestAddEntryCategory(t *testing.T) {
+	teardownSuite := setupSuite(t)
+	defer teardownSuite(t)
+	
+	logic.AddEntryCategory(&pb.AddEntryCategoryRequest{
+		EntryCategory : &pb.EntryCategory{
+			Category: "B",
+			Note:"this is a note",
+			
+		},
+	})
+	entry, err := logic.AddEntryCategory(&pb.AddEntryCategoryRequest{
+		EntryCategory : &pb.EntryCategory{
+			Category: "A",
+			Note:"this is a note",
+			
+		},
+	})
+	checkRes(t,err,entry)
+}
 func TestImportEntries(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)
@@ -65,19 +86,7 @@ func TestDelEntry(t *testing.T) {
 	})
 	checkRes(t,err,entry)
 }
-func TestAddEntryCategory(t *testing.T) {
-	teardownSuite := setupSuite(t)
-	defer teardownSuite(t)
-	
-	entry, err := logic.AddEntryCategory(&pb.AddEntryCategoryRequest{
-		EntryCategory : &pb.EntryCategory{
-			Category: "B",
-			Note:"this is a note",
-			
-		},
-	})
-	checkRes(t,err,entry)
-}
+
 
 func TestListEntryCategory(t *testing.T) {
 	teardownSuite := setupSuite(t)

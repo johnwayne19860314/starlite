@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"strings"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
@@ -22,9 +21,10 @@ func init() {
 		logx.Error("can not load config ", "error", err)
 	}
 
-	if !strings.Contains(config.DBSource, "dummy-password") {
-		runDBMigration(config.MigrationURL, config.DBSource)
-	}
+	// if !strings.Contains(config.DBSource, "dummy-password") {
+	// 	runDBMigration(config.MigrationURL, config.DBSource)
+	// }
+	runDBMigration(config.MigrationURL, config.DBSource)
 
 	repo.NewDBInstanceSingle(context.Background(), config.DBSource)
 }

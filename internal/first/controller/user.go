@@ -20,6 +20,7 @@ func addUser(reqCtx appx.ReqContext) (interface{}, error) {
 	return logic.AddUser(&addUserReq)
 }
 
+
 func login(reqCtx appx.ReqContext) (interface{}, error) {
 
 	var logic = bizlogic.MustNewFirstBizLogic(reqCtx)

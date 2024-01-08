@@ -11,6 +11,7 @@ type (
 		UpdateUser(input *pb.UpdateUserRequest) (interface{}, error)
 		ListUsers(input *pb.ListUsersRequest) (*pb.ListUsersResponse, error)
 		DelUser(input *pb.DelUserRequest) (*pb.DelUserResponse, error)
+		AddUserAdmin() (interface{}, error)
 
 
 		AddEntry(input *pb.AddEntryRequest) (*pb.AddEntryResponse, error)
