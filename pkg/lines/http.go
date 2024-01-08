@@ -51,6 +51,7 @@ func SetupCORS(appCtx appx.AppContext, router *gin.Engine) {
 		AllowCredentials: true,
 		AllowWildcard:    true,
 		MaxAge:           12 * time.Hour,
+		AllowAllOrigins: true,
 	}
 	if appCtx.IsLocal() {
 		cfg.AllowAllOrigins = true
