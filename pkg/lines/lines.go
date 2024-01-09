@@ -26,7 +26,9 @@ func InitApp(env string) *appContext {
 
 	//router := gin.New()
 	healthcheck.Init(appCtx, appCtx.router)
-	appCtx.router.Use(static.Serve("/", static.LocalFile("./ui/dist", true)))
+	if !appCtx.IsLocal() {
+		appCtx.router.Use(static.Serve("/", static.LocalFile("./ui/dist", true)))
+	}
 	appCtx.router.Use(MiddlewareWrapper(appCtx, middlewarex.Log))
 	appCtx.router.Use(MiddlewareWrapper(appCtx, middlewarex.Recovery))
 	SetupCORS(appCtx, appCtx.router)
