@@ -19,8 +19,8 @@ import (
 )
 
 // InitApp will initialize app context with IoC container inject.Injector
-func InitApp() *appContext {
-	appCtx := NewAppContext("local")
+func InitApp(env string) *appContext {
+	appCtx := NewAppContext(env)
 
 	logx.Init(appCtx.IsLocal())
 

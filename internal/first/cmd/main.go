@@ -14,8 +14,22 @@ import (
 	"github.startlite.cn/itapp/startlite/pkg/lines"
 	"github.startlite.cn/itapp/startlite/pkg/lines/logx"
 )
+// var appCtx *lines.appContext
+// func init() {
+// 	config, err := sconfig.LoadConfig(".")
+// 	if err != nil {
+// 		logx.Error("can not load config ", "error", err)
+// 	}
 
-func init() {
+// 	// if !strings.Contains(config.DBSource, "dummy-password") {
+// 	// 	runDBMigration(config.MigrationURL, config.DBSource)
+// 	// }
+// 	runDBMigration(config.MigrationURL, config.DBSource)
+
+// 	repo.NewDBInstanceSingle(context.Background(), config.DBSource)
+// }
+
+func main() {
 	config, err := sconfig.LoadConfig(".")
 	if err != nil {
 		logx.Error("can not load config ", "error", err)
@@ -27,10 +41,7 @@ func init() {
 	runDBMigration(config.MigrationURL, config.DBSource)
 
 	repo.NewDBInstanceSingle(context.Background(), config.DBSource)
-}
-
-func main() {
-	appCtx := lines.InitApp()
+	appCtx := lines.InitApp(config.Environment)
 
 	routes := controller.GetRoutes(appCtx)
 	lines.SetupHttpServer(appCtx, routes)
