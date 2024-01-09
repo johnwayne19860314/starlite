@@ -9,6 +9,9 @@ docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 -t
 
 docker build -t your_image_name .
 docker build --progress=plain --platform="linux/amd64" -t 19860314/starlite-first:latest --build-arg="MODULE_NAME=first" .
+
+docker build --progress=plain --platform="linux/amd64" -t 19860314/starlite-front:latest 
+
 docker build --progress=plain -t 19860314/starlite-first-mac:latest --build-arg="MODULE_NAME=first" .
 
 <!-- docker tag your-image-name your-dockerhub-username/your-repo-name:your-tag
