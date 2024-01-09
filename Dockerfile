@@ -50,7 +50,7 @@ EXPOSE 8080
 
 #ENV MODULE_NAME=first
 USER deploy
-
+RUN chmod 777 /starlite/first/start.sh
 #ENTRYPOINT /starlite/first/main
 ENTRYPOINT ["/starlite/first/start.sh"]
 CMD [ "/starlite/first/main" ]

@@ -7,7 +7,6 @@ on:
   push: # 当有代码推送事件发生时
     branches:
       - main 
-      - back-front
 
 # 定义工作流的任务
 jobs:
