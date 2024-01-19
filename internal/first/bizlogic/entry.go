@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.startlite.cn/itapp/startlite/internal/first/db/sqlc"
 	pb "github.startlite.cn/itapp/startlite/internal/first/grpc/proto/pd/services"
 	"github.startlite.cn/itapp/startlite/internal/pkg/infra/repo"
@@ -12,13 +13,17 @@ import (
 
 func (f *firstBizLogic) AddEntry(input *pb.AddEntryRequest) (*pb.AddEntryResponse, error) {
 	entry, err := f.store.CreateEntry(f.reqCtx, db.CreateEntryParams{
-		EntryCode:   input.Entry.Code,
+		EntryCode:     input.Entry.Code,
 		EntryCategory: input.Entry.CodeCategory,
-		EntryName:   input.Entry.Name,
-		EntryAmount: input.Entry.Amount,
-		EntryWeight: float64(input.Entry.Weight),
-		EntryNote:   input.Entry.Note,
-		IsActive:    true,
+		EntryName:     input.Entry.Name,
+		EntryAmount:   input.Entry.Amount,
+		EntryWeight:   float64(input.Entry.Weight),
+		EntryNote:     input.Entry.Note,
+		SupplierName:      pgtype.Text{String: input.Entry.Supplier, Valid: true} ,
+		SupplierContactInfo:      pgtype.Text{String: input.Entry.SupplierContact, Valid: true} ,
+		Fix:           input.Entry.Fix,
+		ChemicalName:  input.Entry.ChemicalName,
+		IsActive:      true,
 	})
 	if err != nil {
 		f.reqCtx.Error("failed to add entry ", "error", err)
@@ -26,12 +31,12 @@ func (f *firstBizLogic) AddEntry(input *pb.AddEntryRequest) (*pb.AddEntryRespons
 	}
 	res := &pb.AddEntryResponse{
 		Entry: &pb.Entry{
-			Code:   entry.EntryCode,
+			Code:         entry.EntryCode,
 			CodeCategory: entry.EntryCategory,
-			Name:   entry.EntryName,
-			Amount: entry.EntryAmount,
-			Weight: input.Entry.Weight,
-			Note:   input.Entry.Note,
+			Name:         entry.EntryName,
+			Amount:       entry.EntryAmount,
+			Weight:       input.Entry.Weight,
+			Note:         input.Entry.Note,
 		},
 	}
 	return res, nil
@@ -70,8 +75,8 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 	// }
 	code := input.Code
 	sqlHead := "UPDATE first.entry "
-	sqlTail := fmt.Sprintf(" WHERE entry_code = '%v' ",code) 
-	
+	sqlTail := fmt.Sprintf(" WHERE entry_code = '%v' ", code)
+
 	//initBody := "SET "
 	sqlbody := "SET "
 
@@ -81,7 +86,7 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 		//isUpdate = true
 		sqlbody += fmt.Sprintf(" entry_name = '%s' ,", input.Name)
 	}
-	if !input.IsActive{
+	if !input.IsActive {
 		//isUpdate = true
 		sqlbody += " is_active = false , "
 	}
@@ -97,31 +102,33 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 	if input.Weight != 0.0 {
 		//idx += 1
 		sqlbody += fmt.Sprintf(" entry_weight = %f ,", input.Weight)
-		// entry, err = f.store.UpdateEntryWeight(f.reqCtx, db.UpdateEntryWeightParams{
-		// 	ID:          id,
-		// 	EntryWeight: float64(input.Weight),
-		// })
-		// errMsg = "failed to update entry by weight"
+
 	}
 	if input.Note != "" {
-		//idx += 1
 		sqlbody += fmt.Sprintf(" entry_note = '%s' ,", input.Note)
-		// entry, err = f.store.UpdateEntryNote(f.reqCtx, db.UpdateEntryNoteParams{
-		// 	ID:        id,
-		// 	EntryNote: input.Note,
-		// })
-		// errMsg = "failed to update entry by note"
+	}
+	if input.Supplier != "" {
+		sqlbody += fmt.Sprintf(" supplier_name = '%s' ,", input.Supplier)
+	}
+	if input.SupplierContact != "" {
+		sqlbody += fmt.Sprintf(" supplier_contact_info = '%s' ,", input.SupplierContact)
+	}
+	if input.Fix != "" {
+		sqlbody += fmt.Sprintf(" fix = '%s' ,", input.Fix)
+	}
+	if input.ChemicalName != "" {
+		sqlbody += fmt.Sprintf(" chemical_name = '%s' ,", input.ChemicalName)
 	}
 	if sqlbody != "SET " {
-		sqlBody := sqlbody[0:len(sqlbody)-1]
-		updateSql := (sqlHead+sqlBody+sqlTail)
-		conn,err := repo.GetConnInstanceSingle()
+		sqlBody := sqlbody[0 : len(sqlbody)-1]
+		updateSql := (sqlHead + sqlBody + sqlTail)
+		conn, err := repo.GetConnInstanceSingle()
 		if err != nil {
 			f.reqCtx.Error(errMsg, "error", err)
 			return nil, err
 		}
-		
-		res := conn.Exec(f.reqCtx,updateSql)
+
+		res := conn.Exec(f.reqCtx, updateSql)
 		err = res.Close()
 		if err != nil {
 			f.reqCtx.Error(errMsg, "error", err)
@@ -129,7 +136,7 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 		}
 		// todo get res retrive data
 	}
-	
+
 	return nil, nil
 }
 
@@ -152,7 +159,7 @@ func (f *firstBizLogic) ImportEntries(input *pb.ImportEntryRequest) (interface{}
 		for id, colCell := range row {
 			if id == 0 {
 				tmp.EntryCode = colCell
-			}else if id == 1 {
+			} else if id == 1 {
 				tmp.EntryCategory = colCell
 			} else if id == 2 {
 				tmp.EntryName = colCell
@@ -189,26 +196,30 @@ func (f *firstBizLogic) ImportEntries(input *pb.ImportEntryRequest) (interface{}
 func (f *firstBizLogic) ListEntries(input *pb.ListEntriesRequest) (*pb.ListEntriesResponse, error) {
 
 	entries, err := f.store.ListEntrys(f.reqCtx, db.ListEntrysParams{
-		IsActive: input.IsActive,
+		IsActive:      input.IsActive,
 		EntryCategory: input.Category,
-		Offset:   input.Offset,
-		Limit:    input.Limit,
+		Offset:        input.Offset,
+		Limit:         input.Limit,
 	})
 	if err = f.checkError("failed to list entries", err); err != nil {
 		return nil, err
 	}
 	res := pb.ListEntriesResponse{}
 
-	for id, entry := range entries {
+	for _, entry := range entries {
 		tmp := pb.ListEntry{
-			Name:   entry.EntryName,
-			Code:   entry.EntryCode,
+			Name:         entry.EntryName,
+			Code:         entry.EntryCode,
 			CodeCategory: entry.EntryCategory,
-			Amount: entry.EntryAmount,
-			Weight: float32(entry.EntryWeight),
-			Note:   entry.EntryNote,
-			Key:    strconv.Itoa(id),
-			Id:     entry.ID,
+			Amount:       entry.EntryAmount,
+			Weight:       float32(entry.EntryWeight),
+			Note:         entry.EntryNote,
+			Key:          strconv.Itoa(int(entry.ID)),
+			Id:           entry.ID,
+			Supplier:     entry.SupplierName.String,
+			SupplierContactInfo: entry.SupplierContactInfo.String,
+			Fix:          entry.Fix,
+			ChemicalName: entry.ChemicalName,
 		}
 		res.Entries = append(res.Entries, &tmp)
 	}
@@ -216,9 +227,9 @@ func (f *firstBizLogic) ListEntries(input *pb.ListEntriesRequest) (*pb.ListEntri
 	return &res, nil
 }
 
-func (f *firstBizLogic) DelEntry(input *pb.DelEntryRequest) (*pb.DelEntryResponse,error) {
+func (f *firstBizLogic) DelEntry(input *pb.DelEntryRequest) (*pb.DelEntryResponse, error) {
 	res := &pb.DelEntryResponse{}
-	err := f.store.DeleteEntry(f.reqCtx,input.Code)
+	err := f.store.DeleteEntry(f.reqCtx, input.Code)
 	if err = f.checkError("failed to delete entry", err); err != nil {
 		return nil, err
 	}
@@ -226,47 +237,42 @@ func (f *firstBizLogic) DelEntry(input *pb.DelEntryRequest) (*pb.DelEntryRespons
 	return res, nil
 }
 
-
-func (f *firstBizLogic) AddEntryCategory(input *pb.AddEntryCategoryRequest) (*pb.AddEntryCategoryResponse,error) {
+func (f *firstBizLogic) AddEntryCategory(input *pb.AddEntryCategoryRequest) (*pb.AddEntryCategoryResponse, error) {
 	res := &pb.AddEntryCategoryResponse{}
-	_ ,err := f.store.CreateEntryCategory(f.reqCtx,db.CreateEntryCategoryParams{
+	_, err := f.store.CreateEntryCategory(f.reqCtx, db.CreateEntryCategoryParams{
 		Category: input.EntryCategory.Category,
-		Note: input.EntryCategory.Note,
+		Note:     input.EntryCategory.Note,
 		IsActive: true,
 	})
 	if err = f.checkError("failed to add entry category", err); err != nil {
 		return nil, err
 	}
-	
+
 	return res, nil
 }
 
-
-func (f *firstBizLogic) ListEntryCategories(input *pb.ListEntryCategoriesRequest) (*pb.ListEntryCategoriesResponse,error) {
+func (f *firstBizLogic) ListEntryCategories(input *pb.ListEntryCategoriesRequest) (*pb.ListEntryCategoriesResponse, error) {
 	res := &pb.ListEntryCategoriesResponse{}
-	entryCategories ,err := f.store.ListEntryCategories(f.reqCtx,true)
+	entryCategories, err := f.store.ListEntryCategories(f.reqCtx, true)
 	if err = f.checkError("failed to add entry category", err); err != nil {
 		return nil, err
 	}
-	for _, item := range entryCategories{
+	for _, item := range entryCategories {
 		tmp := pb.EntryCategoryItem{
-			Key: item.Category,
-			Label: "类型"+item.Category,
-			Note: item.Note,
-			
+			Key:   item.Category,
+			Label: "类型" + item.Category,
+			Note:  item.Note,
 		}
 		res.Items = append(res.Items, &tmp)
 	}
 	return res, nil
 }
 
-
-func (f *firstBizLogic) UpdateEntryCategory(input *pb.UpdateEntryCategoryRequest) (*pb.UpdateEntryCategoryResponse,error) {
+func (f *firstBizLogic) UpdateEntryCategory(input *pb.UpdateEntryCategoryRequest) (*pb.UpdateEntryCategoryResponse, error) {
 	//res := &pb.UpdateEntryCategoryRequest{}
-	err := f.store.UpdateEntryCategory(f.reqCtx,db.UpdateEntryCategoryParams{
+	err := f.store.UpdateEntryCategory(f.reqCtx, db.UpdateEntryCategoryParams{
 		Category: input.EntryCategory.Category,
-		Note: input.EntryCategory.Note,
-		
+		Note:     input.EntryCategory.Note,
 	})
 	if err = f.checkError("failed to update entry category", err); err != nil {
 		return nil, err
@@ -274,9 +280,8 @@ func (f *firstBizLogic) UpdateEntryCategory(input *pb.UpdateEntryCategoryRequest
 	return nil, nil
 }
 
-
-func (f *firstBizLogic) DelEntryCategory(input *pb.DelEntryCategoryRequest) (*pb.DelEntryCategoryResponse,error) {
-	err := f.store.DeleteEntryCategory(f.reqCtx,input.Category)
+func (f *firstBizLogic) DelEntryCategory(input *pb.DelEntryCategoryRequest) (*pb.DelEntryCategoryResponse, error) {
+	err := f.store.DeleteEntryCategory(f.reqCtx, input.Category)
 	if err = f.checkError("failed to delete entry category", err); err != nil {
 		return nil, err
 	}

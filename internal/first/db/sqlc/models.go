@@ -55,16 +55,20 @@ func (ns NullFirstUserRole) Value() (driver.Value, error) {
 }
 
 type FirstEntry struct {
-	ID            int32
-	EntryCode     string
-	EntryCategory string
-	EntryName     string
-	EntryAmount   int32
-	EntryWeight   float64
-	EntryNote     string
-	IsActive      bool
-	CreatedAt     pgtype.Timestamp
-	UpdatedAt     pgtype.Timestamp
+	ID                  int32
+	EntryCode           string
+	EntryCategory       string
+	EntryName           string
+	EntryAmount         int32
+	EntryWeight         float64
+	EntryNote           string
+	IsActive            bool
+	CreatedAt           pgtype.Timestamp
+	UpdatedAt           pgtype.Timestamp
+	SupplierName        pgtype.Text
+	SupplierContactInfo pgtype.Text
+	Fix                 string
+	ChemicalName        string
 }
 
 type FirstEntryCategory struct {

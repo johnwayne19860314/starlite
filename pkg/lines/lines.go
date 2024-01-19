@@ -23,7 +23,6 @@ func InitApp(env string) *appContext {
 	appCtx := NewAppContext(env)
 
 	logx.Init(appCtx.IsLocal())
-
 	//router := gin.New()
 	healthcheck.Init(appCtx, appCtx.router)
 	if !appCtx.IsLocal() {

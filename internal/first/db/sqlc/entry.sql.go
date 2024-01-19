@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createEntry = `-- name: CreateEntry :one
@@ -17,20 +19,28 @@ INSERT INTO first.entry (
   entry_amount,
   entry_weight,
   entry_note,
+  supplier_name,
+  supplier_contact_info,
+  fix,
+  chemical_name,
   is_active
 ) VALUES (
-  $1, $2, $3, $4, $5, $6,$7
-) RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at
+  $1, $2, $3, $4, $5, $6,$7,$8, $9,$10,$11
+) RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name
 `
 
 type CreateEntryParams struct {
-	EntryCode     string
-	EntryCategory string
-	EntryName     string
-	EntryAmount   int32
-	EntryWeight   float64
-	EntryNote     string
-	IsActive      bool
+	EntryCode           string
+	EntryCategory       string
+	EntryName           string
+	EntryAmount         int32
+	EntryWeight         float64
+	EntryNote           string
+	SupplierName        pgtype.Text
+	SupplierContactInfo pgtype.Text
+	Fix                 string
+	ChemicalName        string
+	IsActive            bool
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (FirstEntry, error) {
@@ -41,6 +51,10 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (First
 		arg.EntryAmount,
 		arg.EntryWeight,
 		arg.EntryNote,
+		arg.SupplierName,
+		arg.SupplierContactInfo,
+		arg.Fix,
+		arg.ChemicalName,
 		arg.IsActive,
 	)
 	var i FirstEntry
@@ -55,25 +69,33 @@ func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (First
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
 
 type CreateMultipleEntriesParams struct {
-	EntryCode     string
-	EntryCategory string
-	EntryName     string
-	EntryAmount   int32
-	EntryWeight   float64
-	EntryNote     string
-	IsActive      bool
+	EntryCode           string
+	EntryCategory       string
+	EntryName           string
+	EntryAmount         int32
+	EntryWeight         float64
+	EntryNote           string
+	SupplierName        pgtype.Text
+	SupplierContactInfo pgtype.Text
+	Fix                 string
+	ChemicalName        string
+	IsActive            bool
 }
 
 const deleteEntry = `-- name: DeleteEntry :exec
 UPDATE first.entry
 SET is_active = false
 WHERE entry_code = $1
-RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at
+RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name
 `
 
 func (q *Queries) DeleteEntry(ctx context.Context, entryCode string) error {
@@ -82,7 +104,7 @@ func (q *Queries) DeleteEntry(ctx context.Context, entryCode string) error {
 }
 
 const getEntry = `-- name: GetEntry :one
-SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at FROM first.entry
+SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name FROM first.entry
 WHERE id = $1 LIMIT 1
 `
 
@@ -100,12 +122,16 @@ func (q *Queries) GetEntry(ctx context.Context, id int32) (FirstEntry, error) {
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
 
 const getEntryByCode = `-- name: GetEntryByCode :one
-SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at FROM first.entry
+SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name FROM first.entry
 WHERE entry_code = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -124,12 +150,16 @@ func (q *Queries) GetEntryByCode(ctx context.Context, entryCode string) (FirstEn
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
 
 const getEntryByName = `-- name: GetEntryByName :one
-SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at FROM first.entry
+SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name FROM first.entry
 WHERE entry_name = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -148,12 +178,16 @@ func (q *Queries) GetEntryByName(ctx context.Context, entryName string) (FirstEn
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
 
 const listEntrys = `-- name: ListEntrys :many
-SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at FROM first.entry
+SELECT id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name FROM first.entry
 WHERE is_active = $1
 and entry_category = $4
 ORDER BY updated_at desc
@@ -193,6 +227,10 @@ func (q *Queries) ListEntrys(ctx context.Context, arg ListEntrysParams) ([]First
 			&i.IsActive,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.SupplierName,
+			&i.SupplierContactInfo,
+			&i.Fix,
+			&i.ChemicalName,
 		); err != nil {
 			return nil, err
 		}
@@ -208,7 +246,7 @@ const updateEntryAmount = `-- name: UpdateEntryAmount :one
 UPDATE first.entry
 SET entry_amount = $2
 WHERE id = $1
-RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at
+RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name
 `
 
 type UpdateEntryAmountParams struct {
@@ -230,6 +268,10 @@ func (q *Queries) UpdateEntryAmount(ctx context.Context, arg UpdateEntryAmountPa
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
@@ -238,7 +280,7 @@ const updateEntryNote = `-- name: UpdateEntryNote :one
 UPDATE first.entry
 SET entry_note = $2
 WHERE id = $1
-RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at
+RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name
 `
 
 type UpdateEntryNoteParams struct {
@@ -260,6 +302,10 @@ func (q *Queries) UpdateEntryNote(ctx context.Context, arg UpdateEntryNoteParams
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }
@@ -268,7 +314,7 @@ const updateEntryWeight = `-- name: UpdateEntryWeight :one
 UPDATE first.entry
 SET entry_weight = $2
 WHERE id = $1
-RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at
+RETURNING id, entry_code, entry_category, entry_name, entry_amount, entry_weight, entry_note, is_active, created_at, updated_at, supplier_name, supplier_contact_info, fix, chemical_name
 `
 
 type UpdateEntryWeightParams struct {
@@ -290,6 +336,10 @@ func (q *Queries) UpdateEntryWeight(ctx context.Context, arg UpdateEntryWeightPa
 		&i.IsActive,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.SupplierName,
+		&i.SupplierContactInfo,
+		&i.Fix,
+		&i.ChemicalName,
 	)
 	return i, err
 }

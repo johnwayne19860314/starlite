@@ -6,9 +6,13 @@ INSERT INTO first.entry (
   entry_amount,
   entry_weight,
   entry_note,
+  supplier_name,
+  supplier_contact_info,
+  fix,
+  chemical_name,
   is_active
 ) VALUES (
-  $1, $2, $3, $4, $5, $6,$7
+  $1, $2, $3, $4, $5, $6,$7,$8, $9,$10,$11
 ) RETURNING *;
 
 -- name: GetEntry :one
@@ -65,7 +69,11 @@ INSERT INTO first.entry (
   entry_amount,
   entry_weight,
   entry_note,
+  supplier_name,
+  supplier_contact_info,
+  fix,
+  chemical_name,
   is_active
 ) VALUES (
-  $1, $2, $3, $4, $5, $6,$7
+  $1, $2, $3, $4, $5, $6,$7,$8, $9,$10,$11
 );

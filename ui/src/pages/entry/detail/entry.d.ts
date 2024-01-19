@@ -31,4 +31,8 @@ export const initDataSourceItem = {
     "amount": 1,
     "weight": 1.1,
     "note": "",
+    "supplier": "",
+    "fix": "",
+    "chemicalName":"",
+    "supplierContactInfo": ""
 }

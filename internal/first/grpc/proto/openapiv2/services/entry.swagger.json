@@ -139,6 +139,18 @@
         },
         "isActive": {
           "type": "boolean"
+        },
+        "supplier": {
+          "type": "string"
+        },
+        "supplierContact": {
+          "type": "string"
+        },
+        "fix": {
+          "type": "string"
+        },
+        "chemicalName": {
+          "type": "string"
         }
       }
     },

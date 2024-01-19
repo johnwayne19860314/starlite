@@ -184,6 +184,10 @@ declare namespace API {
     amount: number;
     weight: number;
     note: string;
+    supplier: string;
+    fix: string;
+    chemicalName: string;
+    supplierContactInfo: string;
     //id : number
     [key: string]: string | number; // Add an index signature
   }
@@ -215,6 +219,9 @@ declare namespace API {
     amount : number;
     weight: number;
     note: string;
+    supplier: string;
+    fix: string;
+    chemicalName: string;
     isActive: bool
     //id:number
   }

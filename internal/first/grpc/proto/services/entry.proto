@@ -50,6 +50,10 @@ message Entry {
     float weight = 4;
     string note = 6;
     bool isActive = 5;
+    string supplier = 8;
+    string supplier_contact = 11;
+    string fix = 9;
+    string chemicalName = 10;
     
 }
 
@@ -89,6 +93,11 @@ message ListEntry {
     float weight = 4;
     string note = 6;
     int32 id = 7;
+    string supplier = 11;
+    string supplierContactInfo = 12;
+    string fix = 9;
+    string chemicalName = 10;
+
 }
 message ListEntriesResponse {
     repeated ListEntry entries = 1;
@@ -102,6 +111,10 @@ message UpdateEntryRequest {
     string note = 5;
     string code = 4;
     string name = 6;
+    string supplier = 8;
+    string supplier_contact = 11;
+    string fix = 9;
+    string chemicalName = 10;
 }
 message UpdateEntryResponse {
     Entry entry = 1;

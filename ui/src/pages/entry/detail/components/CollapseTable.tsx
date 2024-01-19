@@ -27,7 +27,7 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
   const [filters, setFilters] = useState<any>({});
   
   const { tabKey } = props;
-  console.log("=====tabkey is ======",props)
+  //console.log("=====tabkey is ======",props)
 
   useEffect(() => {
     // Fetch data from your API endpoint
@@ -39,8 +39,14 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
           Offset: 0,
           Limit: 9999999,
         }); // Replace with your API endpoint
-
-        setDataSource(response.data.entries||[]);
+        let tmp = response.data.entries
+        if (!tmp) {
+          tmp = []
+          initDataSourceItem.code = ""
+        }else {
+          initDataSourceItem.code = tmp[tmp.length-1].code
+        }
+        setDataSource(tmp);
         console.log(response)
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -66,9 +72,16 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       amount :  parseInt(values.amount),
       weight : parseFloat(values.weight),
       note : values.note,
-      isActive : true
+      isActive : true,
+      supplier:values.supplier,
+      fix:values.fix,
+      chemicalName:values.chemicalName,
+
     }
-    const result = await addEntry({entry});
+
+    
+    if (record.key == initDataSourceItem.key) {
+      const result = await addEntry({entry});
     if (result) {
       setModalVisible(false);
       message.success(`新增成功。`);
@@ -77,14 +90,13 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       message.error(`新增失败。`);
     }
     setConfirmLoading(false);
+    } else {
+      handleSave(values,record.key)
+    }
+    
   };
 
-  // const addHandler = () => {
-  //   setModalVisible(true);
-  //   setConfirmLoading(false)
-  //   setRecord(initEntryCategory);
-  // };
-
+  
   const resetHandler = () => {
     if (resetDataSource) {
       setResetDataSource(false)
@@ -95,14 +107,33 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
   };
 
   const handleExpand = (key: string) => {
+    // if (expandedRowKey === key) {
+    //   setExpandedRowKey(undefined)
+    // }else{
+    //   setExpandedRowKey(key)
+    // }
+    //setExpandedRowKey(key)
     setExpandedRowKey((prevKey) => (prevKey === key ? undefined : key));
   };
 
   const handleEdit = (record: API.DataSourceItem) => {
+    console.log("handler edit===", record.key, record.name)
     setEditingKey(record.key);
-    setExpandedRowKey(record.key);
-    //handleExpand(record.key)
+    //setExpandedRowKey(record.key);
+    
+    handleExpand(record.key)
+    
   };
+
+  const handleEdit1 = (record: API.DataSourceItem) => {
+    setModalVisible(true);
+    setConfirmLoading(false)
+    // console.log("add handler , ", initDataSourceItem)
+    // let tmp = JSON.parse(JSON.stringify(initDataSourceItem))
+    setRecord(record);
+  };
+
+ 
 
   const handleDelete = (code: string) => {
     const delEntryFunc = async () => {
@@ -130,9 +161,9 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
   //   });
   // };
 
-  const handleSave = async (form: any, key: string) => {
+  const handleSave = async (values: any, key: string) => {
     try {
-      const values = await form.validateFields();
+      //const values = await form.validateFields();
       const entry = {
         name : values.name,
         code : values.code,
@@ -140,27 +171,30 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
         amount :  parseInt(values.amount),
         weight : parseFloat(values.weight),
         note : values.note,
-        isActive : true
+        isActive : true,
+        supplier:values.supplier,
+        SupplierContactInfo: values.supplierContactInfo,
+        fix:values.fix,
+        chemicalName:values.chemicalName,
       }
       const saveEntry = async () => {
         try {
-          if (entry.name == newEntryName) {
-            await addEntry({
-              entry
-            }); 
-          }else {
-            await updateEntry(entry)
-          }
-          let newData = [...dataSource];
-          let index = newData.findIndex((item) => key === item.key);
-          if (index > -1) {
-            newData[index] = { ...newData[index], ...values };
-            setDataSource(newData);
-            setEditingKey(undefined);
-            setExpandedRowKey(undefined);
-          }
+          await updateEntry(entry)
+
+          setModalVisible(false);
+          message.success(`更新成功。`);
+          resetHandler();
+          // let newData = [...dataSource];
+          // let index = newData.findIndex((item) => key === item.key);
+          // if (index > -1) {
+          //   newData[index] = { ...newData[index], ...values };
+          //   setDataSource(newData);
+          //   setEditingKey(undefined);
+          //   setExpandedRowKey(undefined);
+          // }
         } catch (error) {
           console.error('Error fetching data:', error);
+          message.success(`更新失败。`);
         }
       };
   
@@ -179,32 +213,13 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       dataIndex: 'code',
       key: 'code',
     },
-    // {
-    //   title: 'Name',
-    //   dataIndex: 'name',
-    //   key: 'name',
-    // },
-    // {
-    //   title: 'Amount',
-    //   dataIndex: 'amount',
-    //   key: 'amount',
-    // },
-    // {
-    //   title: 'Weight',
-    //   dataIndex: 'weight',
-    //   key: 'weight',
-    // },
-    // {
-    //   title: 'Note',
-    //   dataIndex: 'note',
-    //   key: 'note',
-    // },
+    
     {
       title: '操作',
       key: 'actions',
       render: (record:any) => (
         <span>
-          <Button type="primary" style={{ marginRight: 8 }} onClick={() => handleEdit(record)}>
+          <Button type="primary" style={{ marginRight: 8 }} onClick={() => handleEdit1(record)}>
             更改
           </Button>
           <Popconfirm
@@ -217,32 +232,20 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       ),
     },
   ];
-  const addRow = () => {
-    
-    const newKey = (dataSource.length + 1).toString();
-    const newRow: API.DataSourceItem = {
-      key: newKey,
-      id :0,
-      name: newEntryName,
-      code: `${tabKey}${newKey}`,
-      amount: 0,
-      weight:0.0,
-      note: '新的描述',
-    };
-    setDataSource([newRow, ...dataSource]);
-    setEditingKey(newKey);
-    setExpandedRowKey(undefined);
-  };
+  
 
   const addHandler = () => {
     setModalVisible(true);
     setConfirmLoading(false)
-    setRecord(initDataSourceItem);
+    console.log("add handler , ", initDataSourceItem)
+    let tmp = JSON.parse(JSON.stringify(initDataSourceItem))
+    setRecord(tmp);
   };
   const handleFilterChange = (columnKey: string, value: string) => {
     setFilters((prevFilters:any) => ({ ...prevFilters, [columnKey]: value }));
   };
   const filteredDataSource = dataSource.filter((item) => {
+    //console.log("the filters are ", filters)
     return Object.keys(filters).every((key) => {
       if (key === 'amount') {
         return item[key] >= parseInt(filters[key], 10);
@@ -254,7 +257,16 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       return String(item[key]).toLowerCase().includes(filters[key].toLowerCase());
     });
   });
-  const isEditing = (record: API.DataSourceItem) => record.key === editingKey;
+  const isEditing = (record: API.DataSourceItem) => {
+    console.log("is editing ", record.key, editingKey)
+   
+    return (record.key === editingKey);
+  }
+  const getRecordName = (record: API.DataSourceItem) => {
+    console.log("getRecordName ", record.name)
+    
+    return record.name;
+  }
 
   const editColumns = columns.map((col) => {
     // if (!col.editable) {
@@ -276,24 +288,26 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
   
     return {
       ...editableCol,
-      onCell: (record: API.DataSourceItem) => ({
-        record,
-        inputType: 'text',
-        dataIndex: editableCol.dataIndex,
-        title: editableCol.title,
-        editing: isEditing(record),
-      }),
+      // onCell: (record: API.DataSourceItem) => ({
+      //   record,
+      //   inputType: 'text',
+      //   dataIndex: editableCol.dataIndex,
+      //   title: editableCol.title,
+      //  editing: isEditing(record),
+      // }),
     };
 
   });
+  
   const PanelContent: React.FC<{ record: API.DataSourceItem }> = ({ record }) => (
+    //{console.log(record)}
     <div>
       {isEditing(record) ? (
         <Form form={form} onFinish={() => handleSave(form, record.key)}>
           {/* <Form.Item label="编码" name="code"  initialValue={record.code}>
             <Input />
           </Form.Item> */}
-          <Form.Item label="名称" name="name" initialValue={record.name}>
+          <Form.Item label="名称" name="name" initialValue={getRecordName(record)}>
             <Input />
           </Form.Item>
           {/* <Form.Item label="数量" name="amount" initialValue={record.amount}>
@@ -302,9 +316,12 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
           <Form.Item label="重量" name="weight" initialValue={record.weight}>
             <Input />
           </Form.Item>
-          {/* <Form.Item label="note" name="note" initialValue={record.note}>
+          <Form.Item label="供应商名称" name="supplier" initialValue={record.supplier}>
             <Input />
-          </Form.Item> */}
+          </Form.Item>
+          <Form.Item label="供应商联系方式" name="supplierContactInfo" initialValue={record.supplierContactInfo}>
+            <Input />
+          </Form.Item>
           <Form.Item label="说明" name="note" initialValue={record.note}>
             <TextArea rows={4} />
           </Form.Item>
@@ -315,9 +332,11 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
       ) : (
         <>
         {/* <p>details go here: </p> */}
-        <p>名称 : {record.name} </p>
+        <p>名称 : {getRecordName(record)} </p>
         <p>数量 : {record.amount}</p>
         <p>重量 : {record.weight}</p>
+        <p>供应商名称 : {record.supplier}</p>
+        <p>供应商联系方式 : {record.supplierContactInfo}</p>
         <div>说明 : {record.note}</div>
         </>
         
@@ -334,14 +353,19 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
             新增原料
           </Button>
           <Input
-            placeholder="用原料名称过滤"
+            placeholder="用名称搜索"
             onChange={(e) => handleFilterChange('name', e.target.value)}
             value={filters.name || ''}
           />
           <Input
-            placeholder="用原料编码过滤"
+            placeholder="用编码搜索"
             onChange={(e) => handleFilterChange('code', e.target.value)}
-            value={filters.age || ''}
+            value={filters.code || ''}
+          />
+          <Input
+            placeholder="用内容搜索"
+            onChange={(e) => handleFilterChange('note', e.target.value)}
+            value={filters.note || ''}
           />
         </Space>
         <Table
@@ -353,11 +377,17 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
               key: 'details',
               render: (_, record) => (
                 <Collapse
-                  activeKey={expandedRowKey === record.key ? [record.key] : []}
+                 activeKey={expandedRowKey === record.key ? [record.key] : []}
+                 // activeKey= {[record.key]}
+                  
                   onChange={() => handleExpand(record.key)}
                 >
                   <Panel key={record.key} header={`展开`}>
+                    {
+                      // console.log(expandedRowKey) &&
                     <PanelContent record={record} />
+                    }
+                    
                   </Panel>
                 </Collapse>
               ),

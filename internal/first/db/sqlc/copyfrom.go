@@ -35,6 +35,10 @@ func (r iteratorForCreateMultipleEntries) Values() ([]interface{}, error) {
 		r.rows[0].EntryAmount,
 		r.rows[0].EntryWeight,
 		r.rows[0].EntryNote,
+		r.rows[0].SupplierName,
+		r.rows[0].SupplierContactInfo,
+		r.rows[0].Fix,
+		r.rows[0].ChemicalName,
 		r.rows[0].IsActive,
 	}, nil
 }
@@ -44,5 +48,5 @@ func (r iteratorForCreateMultipleEntries) Err() error {
 }
 
 func (q *Queries) CreateMultipleEntries(ctx context.Context, arg []CreateMultipleEntriesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"first", "entry"}, []string{"entry_code", "entry_category", "entry_name", "entry_amount", "entry_weight", "entry_note", "is_active"}, &iteratorForCreateMultipleEntries{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"first", "entry"}, []string{"entry_code", "entry_category", "entry_name", "entry_amount", "entry_weight", "entry_note", "supplier_name", "supplier_contact_info", "fix", "chemical_name", "is_active"}, &iteratorForCreateMultipleEntries{rows: arg})
 }

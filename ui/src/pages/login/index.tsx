@@ -62,13 +62,13 @@ const Index: FC<UserConnectedProps> = (props) => {
           //     className={styles.icon} />,
           // ]}
           onFinish={async (values) => {
-            // values = {
-            //   username : "xuedong.ni",
-            //   //username : "dou",
-            //   //username : "lily",
-            //   password : "123"
+            values = {
+              username : "xuedong.ni",
+              //username : "dou",
+              //username : "lily",
+              password : "123"
               
-            // }
+            }
             await handleSubmit(values as API.LoginParams);
           }}
         >
