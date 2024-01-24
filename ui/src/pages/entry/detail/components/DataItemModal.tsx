@@ -2,7 +2,7 @@ import  { useEffect, FC } from 'react';
 import { Modal, Form, Input, message } from 'antd';
 
 import TextArea from 'antd/es/input/TextArea';
-import { newEntryName } from '../entry';
+
 
 export interface FormValues {
   [name: string]: any;
