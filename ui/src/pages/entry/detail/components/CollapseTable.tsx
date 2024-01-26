@@ -280,6 +280,8 @@ const CollapsibleTable: React.FC<CollapseTableProp> = props => {
         <p>名称 : {getRecordName(record)} </p>
         <p>数量 : {record.amount}</p>
         <p>重量 : {record.weight}</p>
+        <p>固含 : {record.fix}</p>
+        <p>材料化学物质名称 : {record.chemicalName}</p>
         <p>供应商名称 : {record.supplier}</p>
         <p>供应商联系方式 : {record.supplierContactInfo}</p>
         <div>说明 : {record.note}</div>

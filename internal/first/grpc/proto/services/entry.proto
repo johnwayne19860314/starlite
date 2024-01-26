@@ -51,7 +51,7 @@ message Entry {
     string note = 6;
     bool isActive = 5;
     string supplier = 8;
-    string supplier_contact = 11;
+    string supplierContactInfo = 11;
     string fix = 9;
     string chemicalName = 10;
     
@@ -112,7 +112,7 @@ message UpdateEntryRequest {
     string code = 4;
     string name = 6;
     string supplier = 8;
-    string supplier_contact = 11;
+    string supplierContactInfo = 11;
     string fix = 9;
     string chemicalName = 10;
 }

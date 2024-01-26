@@ -3,9 +3,11 @@ package repo
 import (
 	"context"
 	"sync"
+	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
+	//"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	_ "github.com/lib/pq"
 
@@ -15,18 +17,32 @@ import (
 )
 
 var instance *db.Queries
-var connInstance *pgconn.PgConn
+var connInstance *pgxpool.Pool
 var once sync.Once
 
 func NewDBInstanceSingle(ctx context.Context, source string) *db.Queries {
 	once.Do(func() {
 		//pgxutil.DB.CopyFrom()
-		conn, err := pgx.Connect(ctx, source)
+		config, err := pgxpool.ParseConfig(source)
 		if err != nil {
-			logx.Error("cannot connect to db: ", "error", &err)
+			logx.Error("failed to parse db config: ", "error", &err)
+		}
+		config.MaxConns = 10
+		config.MaxConnLifetime = time.Minute * 3
+		//config.
+		config.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+			// do something with every new connection
+			return nil
+		}
+		pool, err := pgxpool.NewWithConfig(ctx, config)
+		//pool, err := pgxpool.ConnectConfig(context.Background(), config)
+		//conn, err := pgx.Connect(ctx, source)
+		if err != nil {
+			logx.Error("cannot create pool ", "error", &err)
 		}
 		//defer conn.Close(ctx)
-		connInstance = conn.PgConn()
+		//connInstance = conn.PgConn()
+		connInstance = pool
 
 		// See "Important settings" section.
 		// conn.SetMaxOpenConns(10)
@@ -36,7 +52,7 @@ func NewDBInstanceSingle(ctx context.Context, source string) *db.Queries {
 		// conn.SetMaxOpenConns(10)
 		// conn.SetMaxIdleConns(10)
 
-		instance = db.New(conn)
+		instance = db.New(pool)
 
 	})
 	return instance
@@ -48,7 +64,16 @@ func GetDBInstanceSingle() (*db.Queries, error) {
 	}
 	return instance, nil
 }
-func GetConnInstanceSingle() (*pgconn.PgConn, error) {
+
+// func GetConnInstanceSingle() (*pgconn.PgConn, error) {
+// 	if connInstance == nil {
+// 		err := errorx.Errorf("please init db instance %v", connInstance)
+// 		return nil, errorx.WithStack(err)
+// 	}
+// 	return connInstance, nil
+// }
+
+func GetConnInstanceSingle() (*pgxpool.Pool, error) {
 	if connInstance == nil {
 		err := errorx.Errorf("please init db instance %v", connInstance)
 		return nil, errorx.WithStack(err)

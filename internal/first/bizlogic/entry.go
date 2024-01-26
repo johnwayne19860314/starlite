@@ -13,17 +13,17 @@ import (
 
 func (f *firstBizLogic) AddEntry(input *pb.AddEntryRequest) (*pb.AddEntryResponse, error) {
 	entry, err := f.store.CreateEntry(f.reqCtx, db.CreateEntryParams{
-		EntryCode:     input.Entry.Code,
-		EntryCategory: input.Entry.CodeCategory,
-		EntryName:     input.Entry.Name,
-		EntryAmount:   input.Entry.Amount,
-		EntryWeight:   float64(input.Entry.Weight),
-		EntryNote:     input.Entry.Note,
-		SupplierName:      pgtype.Text{String: input.Entry.Supplier, Valid: true} ,
-		SupplierContactInfo:      pgtype.Text{String: input.Entry.SupplierContact, Valid: true} ,
-		Fix:           input.Entry.Fix,
-		ChemicalName:  input.Entry.ChemicalName,
-		IsActive:      true,
+		EntryCode:           input.Entry.Code,
+		EntryCategory:       input.Entry.CodeCategory,
+		EntryName:           input.Entry.Name,
+		EntryAmount:         input.Entry.Amount,
+		EntryWeight:         float64(input.Entry.Weight),
+		EntryNote:           input.Entry.Note,
+		SupplierName:        pgtype.Text{String: input.Entry.Supplier, Valid: true},
+		SupplierContactInfo: pgtype.Text{String: input.Entry.SupplierContactInfo, Valid: true},
+		Fix:                 input.Entry.Fix,
+		ChemicalName:        input.Entry.ChemicalName,
+		IsActive:            true,
 	})
 	if err != nil {
 		f.reqCtx.Error("failed to add entry ", "error", err)
@@ -110,8 +110,8 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 	if input.Supplier != "" {
 		sqlbody += fmt.Sprintf(" supplier_name = '%s' ,", input.Supplier)
 	}
-	if input.SupplierContact != "" {
-		sqlbody += fmt.Sprintf(" supplier_contact_info = '%s' ,", input.SupplierContact)
+	if input.SupplierContactInfo != "" {
+		sqlbody += fmt.Sprintf(" supplier_contact_info = '%s' ,", input.SupplierContactInfo)
 	}
 	if input.Fix != "" {
 		sqlbody += fmt.Sprintf(" fix = '%s' ,", input.Fix)
@@ -127,16 +127,15 @@ func (f *firstBizLogic) UpdateEntry(input *pb.UpdateEntryRequest) (*pb.UpdateEnt
 			f.reqCtx.Error(errMsg, "error", err)
 			return nil, err
 		}
-
-		res := conn.Exec(f.reqCtx, updateSql)
-		err = res.Close()
-		if err != nil {
-			f.reqCtx.Error(errMsg, "error", err)
-			return nil, err
-		}
-		// todo get res retrive data
+		conn.QueryRow(f.reqCtx, updateSql)
+		// updatedEntry := &db.FirstEntry{}
+		// res := conn.QueryRow(f.reqCtx, updateSql)
+		// if err := res.Scan(updatedEntry); err != nil {
+		// 	f.reqCtx.Error("=failed to get updated entry", "error", err)
+		// 	return nil,err
+		// }
 	}
-
+	//to do return the updated entry
 	return nil, nil
 }
 
@@ -208,18 +207,18 @@ func (f *firstBizLogic) ListEntries(input *pb.ListEntriesRequest) (*pb.ListEntri
 
 	for _, entry := range entries {
 		tmp := pb.ListEntry{
-			Name:         entry.EntryName,
-			Code:         entry.EntryCode,
-			CodeCategory: entry.EntryCategory,
-			Amount:       entry.EntryAmount,
-			Weight:       float32(entry.EntryWeight),
-			Note:         entry.EntryNote,
-			Key:          strconv.Itoa(int(entry.ID)),
-			Id:           entry.ID,
-			Supplier:     entry.SupplierName.String,
+			Name:                entry.EntryName,
+			Code:                entry.EntryCode,
+			CodeCategory:        entry.EntryCategory,
+			Amount:              entry.EntryAmount,
+			Weight:              float32(entry.EntryWeight),
+			Note:                entry.EntryNote,
+			Key:                 strconv.Itoa(int(entry.ID)),
+			Id:                  entry.ID,
+			Supplier:            entry.SupplierName.String,
 			SupplierContactInfo: entry.SupplierContactInfo.String,
-			Fix:          entry.Fix,
-			ChemicalName: entry.ChemicalName,
+			Fix:                 entry.Fix,
+			ChemicalName:        entry.ChemicalName,
 		}
 		res.Entries = append(res.Entries, &tmp)
 	}

@@ -95,33 +95,13 @@ func (f *firstBizLogic) UpdateUser(input *pb.UpdateUserRequest) (interface{}, er
 		f.reqCtx.Error(errMsg, "error", err)
 		return nil, err
 	}
-
-	res := conn.Exec(f.reqCtx, updateSql)
-	err = res.Close()
-	if err != nil {
-		f.reqCtx.Error(errMsg, "error", err)
-		return nil, err
+	updatedUser := &db.FirstUser{}
+	res := conn.QueryRow(f.reqCtx, updateSql)
+	if err := res.Scan(updateUser); err != nil {
+		f.reqCtx.Error("=failed to get updated user", "error", err)
+		return nil,err
 	}
-	// if input.User.Password != "" {
-	// 	user, err = f.store.UpdateUserPassword(f.reqCtx, db.UpdateUserPasswordParams{
-	// 		ID:           input.User.Id,
-	// 		UserPassword: input.User.Password,
-	// 	})
-	// 	errMsg = "failed to update user password "
-	// }
-	// else if input.Role  {
-	// 	user,err = f.store.UpdateUserRole(f.reqCtx,db.UpdateUserRoleParams{
-	// 		ID: input.Id,
-	// 		UserRole: db.FirstUserRole(input.Role.String()),
-	// 	})
-	// 	errMsg = "failed to update user role "
-	// }
-
-	if err != nil {
-		f.reqCtx.Error(errMsg, "error", err)
-		return nil, err
-	}
-	return nil, nil
+	return updatedUser, nil
 }
 
 func mapUserRole(dbRole string) pb.Role {

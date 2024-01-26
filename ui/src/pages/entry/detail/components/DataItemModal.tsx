@@ -127,6 +127,12 @@ const DataItemModal: FC<EntryCategoryModalProps> = props => {
           <Form.Item label="重量" name="weight" initialValue={record.weight} required>
             <Input />
           </Form.Item>
+          <Form.Item label="固含" name="fix" initialValue={record.fix} required>
+            <Input />
+          </Form.Item>
+          <Form.Item label="材料化学物质名称" name="chemicalName" initialValue={record.chemicalName} required>
+            <Input />
+          </Form.Item>
           <Form.Item label="供应商名称" name="supplier" initialValue={record.supplier}>
             <Input />
           </Form.Item>
